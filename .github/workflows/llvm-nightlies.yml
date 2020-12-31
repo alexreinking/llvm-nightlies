@@ -20,7 +20,9 @@ jobs:
           - os: osx
             bits: 32
 
-          - os: [ windows, osx ]
+          - os: windows
+            arch: arm
+          - os: osx
             arch: arm
         include:
           - version: 10
