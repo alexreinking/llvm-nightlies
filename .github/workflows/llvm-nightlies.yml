@@ -45,24 +45,24 @@ jobs:
           - bits: 64
             LLVM_BUILD_32_BITS: OFF
 
-          - os: windows
-            arch: x86
+          - arch: x86
             bits: 32
+            os: windows
             msvc: amd64_x86
 
-          - os: windows
-            arch: x86
+          - arch: x86
             bits: 64
+            os: windows
             msvc: amd64_amd64
 
-          - os: windows
-            arch: arm
+          - arch: arm
             bits: 32
+            os: windows
             msvc: amd64_arm
 
-          - os: windows
-            arch: arm
+          - arch: arm
             bits: 64
+            os: windows
             msvc: amd64_arm64
     steps:
       - name: Install Ninja (Windows)
