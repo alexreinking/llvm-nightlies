@@ -2,6 +2,7 @@ name: LLVM Nightlies
 on:
   schedule:
     - cron: '0 9 * * *'  # 9am UTC = 1am PST
+  workflow_dispatch:
 jobs:
   build:
     name: Build LLVM ${{matrix.version}} for ${{matrix.arch}}-${{matrix.bits}} ${{matrix.os}}
