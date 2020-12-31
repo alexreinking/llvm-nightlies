@@ -46,6 +46,14 @@ jobs:
           - bits: 64
             LLVM_BUILD_32_BITS: OFF
 
+          - bits: 32
+            os: linux
+            CMAKE_C_FLAGS: -m32
+            CMAKE_CXX_FLAGS: -m32
+            CMAKE_EXE_LINKER_FLAGS: -m32
+            CMAKE_SHARED_LINKER_FLAGS: -m32
+            CMAKE_MODULE_LINKER_FLAGS: -m32
+
           - arch: x86
             bits: 32
             os: windows
@@ -69,9 +77,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install ninja-build gcc g++ gcc-multilib g++-multilib
-#                           g++-arm-linux-gnueabihf \
-#                           g++-multilib-arm-linux-gnueabihf \
-#                           g++-aarch64-linux-gnu
+      #                           g++-arm-linux-gnueabihf \
+      #                           g++-multilib-arm-linux-gnueabihf \
+      #                           g++-aarch64-linux-gnu
 
       - name: Clone LLVM ${{matrix.version}}
         uses: actions/checkout@v2
@@ -89,14 +97,19 @@ jobs:
       - name: Configure LLVM
         run: "cmake -G Ninja
                     -DCMAKE_BUILD_TYPE=Release
-                    -DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}
-                    -DLLVM_ENABLE_ASSERTIONS=ON
-                    -DLLVM_ENABLE_LIBXML2=OFF
+                    \"-DCMAKE_C_FLAGS=${{matrix.CMAKE_C_FLAGS}}\"
+                    \"-DCMAKE_CXX_FLAGS=${{matrix.CMAKE_CXX_FLAGS}}\"
+                    \"-DCMAKE_EXE_LINKER_FLAGS=${{matrix.CMAKE_EXE_LINKER_FLAGS}}\"
+                    \"-DCMAKE_SHARED_LINKER_FLAGS=${{matrix.CMAKE_SHARED_LINKER_FLAGS}}\"
+                    \"-DCMAKE_MODULE_LINKER_FLAGS=${{matrix.CMAKE_MODULE_LINKER_FLAGS}}\"
+                    \"-DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}\"
+                    \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
+                    -DLLVM_ENABLE_ASSERTIONS=ON
                     -DLLVM_ENABLE_RTTI=ON
                     -DLLVM_ENABLE_EH=ON
+                    -DLLVM_ENABLE_LIBXML2=OFF
                     -DLLVM_ENABLE_TERMINFO=OFF
-                    \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     -S llvm-project/llvm -B llvm-build"
 
       - name: Build LLVM
