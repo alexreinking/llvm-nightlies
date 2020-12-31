@@ -46,15 +46,15 @@ jobs:
             LLVM_BUILD_32_BITS: OFF
     steps:
       - name: Install Ninja (Windows)
-        if: startsWith(matrix.os, 'windows')
+        if: startsWith(matrix.runner, 'windows')
         run: choco install ninja
 
       - name: Install Ninja (macOS)
-        if: startsWith(matrix.os, 'osx')
+        if: startsWith(matrix.runner, 'macos')
         run: brew install ninja
 
       - name: Install Ninja (Ubuntu)
-        if: startsWith(matrix.os, 'ubuntu')
+        if: startsWith(matrix.runner, 'ubuntu')
         run: |
           sudo apt update
           sudo apt install ninja-build
