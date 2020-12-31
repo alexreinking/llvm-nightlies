@@ -54,16 +54,6 @@ jobs:
             bits: 64
             os: windows
             msvc: amd64_amd64
-
-          - arch: arm
-            bits: 32
-            os: windows
-            msvc: amd64_arm
-
-          - arch: arm
-            bits: 64
-            os: windows
-            msvc: amd64_arm64
     steps:
       - name: Install Ninja (Windows)
         if: startsWith(matrix.runner, 'windows')
