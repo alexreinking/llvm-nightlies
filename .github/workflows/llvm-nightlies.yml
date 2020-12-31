@@ -68,10 +68,10 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt install ninja-build gcc g++ \
-                           g++-arm-linux-gnueabihf \
-                           g++-multilib-arm-linux-gnueabihf \
-                           g++-aarch64-linux-gnu
+          sudo apt install ninja-build gcc g++ gcc-multilib g++-multilib
+#                           g++-arm-linux-gnueabihf \
+#                           g++-multilib-arm-linux-gnueabihf \
+#                           g++-aarch64-linux-gnu
 
       - name: Clone LLVM ${{matrix.version}}
         uses: actions/checkout@v2
@@ -94,6 +94,7 @@ jobs:
                     -DLLVM_ENABLE_LIBXML2=OFF
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
                     -DLLVM_ENABLE_RTTI=ON
+                    -DLLVM_ENABLE_EH=ON
                     -DLLVM_ENABLE_TERMINFO=OFF
                     \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     -S llvm-project/llvm -B llvm-build"
