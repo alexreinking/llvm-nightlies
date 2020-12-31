@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    name: Build LLVM ${{matrix.version}} for ${{matrix.arch}}-${{matrix.bits}} ${{matrix.os}}
+    name: LLVM ${{matrix.version}} [${{matrix.arch}}-${{matrix.bits}}-${{matrix.os}}]
     runs-on: ${{matrix.runner}}
     strategy:
       fail-fast: false
       matrix:
-        arch: [ x86, arm ]
+        arch: [ x86 ]
         bits: [ 32, 64 ]
         os: [ windows, osx, linux ]
 
@@ -24,6 +24,7 @@ jobs:
             arch: arm
           - os: osx
             arch: arm
+
         include:
           - version: 10
             branch: release/10.x
@@ -37,7 +38,7 @@ jobs:
           - os: osx
             runner: macos-10.15
           - os: linux
-            runner: ubuntu-18.04
+            runner: ubuntu-20.04
 
           - bits: 32
             LLVM_BUILD_32_BITS: ON
@@ -55,19 +56,22 @@ jobs:
             os: windows
             msvc: amd64_amd64
     steps:
-      - name: Install Ninja (Windows)
-        if: startsWith(matrix.runner, 'windows')
+      - name: Configure Windows runner
+        if: runner.os == 'Windows'
         run: choco install ninja
 
-      - name: Install Ninja (macOS)
-        if: startsWith(matrix.runner, 'macos')
+      - name: Configure macOS runner
+        if: runner.os == 'macOS'
         run: brew install ninja
 
-      - name: Install Ninja (Ubuntu)
-        if: startsWith(matrix.runner, 'ubuntu')
+      - name: Configure Ubuntu runner
+        if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt install ninja-build
+          sudo apt install ninja-build gcc g++ \
+                           g++-arm-linux-gnueabihf \
+                           g++-multilib-arm-linux-gnueabihf \
+                           g++-aarch64-linux-gnu
 
       - name: Clone LLVM ${{matrix.version}}
         uses: actions/checkout@v2
@@ -77,6 +81,7 @@ jobs:
           path: llvm-project
 
       - name: Enable Developer Command Prompt
+        if: startsWith(matrix.runner, 'windows')
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{matrix.msvc}}
