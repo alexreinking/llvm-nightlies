@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [ x86 ]
+        arch: [ x86, arm ]
         bits: [ 32, 64 ]
         os: [ windows, osx, linux ]
 
@@ -20,10 +20,9 @@ jobs:
           - os: osx
             bits: 32
 
-        include:
-          - os: linux
+          - os: [ windows, osx ]
             arch: arm
-
+        include:
           - version: 10
             branch: release/10.x
           - version: 11
