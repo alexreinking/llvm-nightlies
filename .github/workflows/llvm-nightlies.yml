@@ -1,0 +1,91 @@
+name: LLVM Nightlies
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 9am UTC = 1am PST
+jobs:
+  build:
+    name: Build LLVM ${{matrix.version}} for ${{matrix.arch}}-${{matrix.bits}} ${{matrix.os}}
+    runs-on: ${{matrix.runner}}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86 ]
+        bits: [ 32, 64 ]
+        os: [ windows, osx, linux ]
+
+        version: [ 10, 11, 12 ]
+
+        exclude:
+          - os: osx
+            bits: 32
+
+        include:
+          - os: linux
+            arch: arm
+
+          - version: 10
+            branch: release/10.x
+          - version: 11
+            branch: release/11.x
+          - version: 12
+            branch: master
+
+          - os: windows
+            runner: windows-2019
+          - os: osx
+            runner: macos-10.15
+          - os: linux
+            runner: ubuntu-18.04
+
+          - bits: 32
+            LLVM_BUILD_32_BITS: ON
+
+          - bits: 64
+            LLVM_BUILD_32_BITS: OFF
+    steps:
+      - name: Install Ninja (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: choco install ninja
+
+      - name: Install Ninja (macOS)
+        if: startsWith(matrix.os, 'osx')
+        run: brew install ninja
+
+      - name: Install Ninja (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt update
+          sudo apt install ninja-build
+
+      - name: Clone LLVM ${{matrix.version}}
+        uses: actions/checkout@v2
+        with:
+          repository: llvm/llvm-project
+          ref: ${{matrix.branch}}
+          path: llvm-project
+
+      - name: Configure LLVM
+        run: >-
+          cmake -G Ninja
+                -DCMAKE_BUILD_TYPE=Release
+                -DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}
+                -DLLVM_ENABLE_ASSERTIONS=ON
+                -DLLVM_ENABLE_LIBXML2=OFF
+                "-DLLVM_ENABLE_PROJECTS=clang;lld"
+                -DLLVM_ENABLE_RTTI=ON
+                -DLLVM_ENABLE_TERMINFO=OFF
+                "-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly"
+                -S llvm-project/llvm -B llvm-build
+
+      - name: Build LLVM
+        run: cmake --build llvm-build
+
+      - name: Install LLVM
+        run: cmake --install llvm-build --prefix llvm-install
+
+      - name: Upload LLVM package
+        uses: actions/upload-artifact@v2
+        with:
+          name: llvm-${{matrix.version}}-${{matrix.arch}}-${{matrix.bits}}-${{matrix.os}}
+          path: llvm-install/
+
