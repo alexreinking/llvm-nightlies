@@ -114,7 +114,9 @@ jobs:
 
       - name: Patch LLVM
         if: runner.os == 'Windows' && matrix.version == 10
-        run: git -C llvm-project apply ../llvm-nightlies/patches/llvm/${{matrix.version}}/*.patch
+        run: |
+          git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0004-fix-dr-1734.patch
+          git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0006-workaround-msvc-bug.patch
 
       - name: Configure LLVM
         run: "cmake -G Ninja
