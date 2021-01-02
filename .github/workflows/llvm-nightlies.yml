@@ -46,7 +46,8 @@ jobs:
           - bits: 64
             LLVM_BUILD_32_BITS: OFF
 
-          - bits: 32
+          - arch: x86
+            bits: 32
             os: linux
             CMAKE_C_FLAGS: -m32
             CMAKE_CXX_FLAGS: -m32
@@ -113,7 +114,7 @@ jobs:
 
       - name: Patch LLVM
         if: runner.os == 'Windows' && matrix.version == 10
-        run: git -C llvm-project apply llvm-nightlies/patches/llvm/10/dr-1734.patch
+        run: git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/dr-1734.patch
 
       - name: Configure LLVM
         run: "cmake -G Ninja
