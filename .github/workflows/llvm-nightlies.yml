@@ -135,7 +135,7 @@ jobs:
       - name: Configure LLVM
         run: "cmake -G Ninja
                     -DCMAKE_BUILD_TYPE=Release
-                    \"-DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/${{matrix.CMAKE_TOOLCHAIN_FILE}}\"
+                    \"-DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/llvm-nightlies/${{matrix.CMAKE_TOOLCHAIN_FILE}}\"
                     \"-DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}\"
                     \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
