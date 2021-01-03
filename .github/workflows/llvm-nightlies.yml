@@ -25,6 +25,7 @@ jobs:
 
           - arch: arm
             os: osx
+
         include:
           - version: 10
             branch: release/10.x
@@ -116,7 +117,8 @@ jobs:
           git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0004-fix-dr-1734.patch
           git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0006-workaround-msvc-bug.patch
 
-      # Will need to run two different developer command prompts.
+      # Will need to run in two different developer command prompts if we
+      # want to build host tools for Windows via Ninja.
       - name: Configure LLVM host tools
         if: matrix.arch == 'arm'
         run: "cmake -G Ninja -S llvm-project/llvm -B llvm-host
@@ -155,6 +157,7 @@ jobs:
       - name: Install LLVM
         run: cmake --install llvm-build --prefix llvm-install --strip
 
+      # TODO: publish on GitHub packages as a Nuget package. Query packages to determine if update needed.
       - name: Upload LLVM package
         uses: actions/upload-artifact@v2
         with:
