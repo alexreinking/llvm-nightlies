@@ -6,3 +6,11 @@ set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
 
 set(LLVM_TARGET_ARCH ARM)
 set(LLVM_DEFAULT_TARGET_TRIPLE arm-linux-gnueabihf)
+
+if (DEFINED ENV{CLANG_TABLEGEN})
+  set(CLANG_TABLEGEN $ENV{CLANG_TABLEGEN})
+endif ()
+
+if (DEFINED ENV{LLVM_TABLEGEN})
+  set(LLVM_TABLEGEN $ENV{LLVM_TABLEGEN})
+endif ()

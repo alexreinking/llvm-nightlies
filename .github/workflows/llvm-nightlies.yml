@@ -125,6 +125,9 @@ jobs:
                     -DLLVM_ENABLE_TERMINFO=OFF
                     -DLLVM_ENABLE_LIBXML2=OFF"
 
+      # This (optional) step sets the LLVM_/CLANG_TABLEGEN environment variables
+      # which are read by the toolchain files. LLVM doesn't respect the usual
+      # convention of "empty is as good as unset" for these.
       - name: Build LLVM host tools
         if: matrix.arch == 'arm'
         run: |
@@ -139,8 +142,6 @@ jobs:
                     \"-DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}\"
                     \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
-                    -DCLANG_TABLEGEN=$CLANG_TABLEGEN
-                    -DLLVM_TABLEGEN=$LLVM_TABLEGEN
                     -DLLVM_ENABLE_ASSERTIONS=ON
                     -DLLVM_ENABLE_RTTI=ON
                     -DLLVM_ENABLE_EH=ON
