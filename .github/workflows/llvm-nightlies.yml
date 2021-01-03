@@ -49,11 +49,7 @@ jobs:
           - arch: x86
             bits: 32
             os: linux
-            CMAKE_C_FLAGS: -m32
-            CMAKE_CXX_FLAGS: -m32
-            CMAKE_EXE_LINKER_FLAGS: -m32
-            CMAKE_SHARED_LINKER_FLAGS: -m32
-            CMAKE_MODULE_LINKER_FLAGS: -m32
+            CMAKE_TOOLCHAIN_FILE: toolchains/x86-32-linux.cmake
 
           - arch: x86
             bits: 32
@@ -121,11 +117,7 @@ jobs:
       - name: Configure LLVM
         run: "cmake -G Ninja
                     -DCMAKE_BUILD_TYPE=Release
-                    \"-DCMAKE_C_FLAGS=${{matrix.CMAKE_C_FLAGS}}\"
-                    \"-DCMAKE_CXX_FLAGS=${{matrix.CMAKE_CXX_FLAGS}}\"
-                    \"-DCMAKE_EXE_LINKER_FLAGS=${{matrix.CMAKE_EXE_LINKER_FLAGS}}\"
-                    \"-DCMAKE_SHARED_LINKER_FLAGS=${{matrix.CMAKE_SHARED_LINKER_FLAGS}}\"
-                    \"-DCMAKE_MODULE_LINKER_FLAGS=${{matrix.CMAKE_MODULE_LINKER_FLAGS}}\"
+                    \"-DCMAKE_TOOLCHAIN_FILE=${{matrix.CMAKE_TOOLCHAIN_FILE}}\"
                     \"-DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}\"
                     \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
