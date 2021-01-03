@@ -60,11 +60,13 @@ jobs:
             bits: 32
             os: linux
             multilib: g++-arm-linux-gnueabihf g++-multilib-arm-linux-gnueabihf
+            CMAKE_TOOLCHAIN_FILE: toolchains/arm-32-linux.cmake
 
           - arch: arm
             bits: 64
             os: linux
             multilib: g++-aarch64-linux-gnu
+            CMAKE_TOOLCHAIN_FILE: toolchains/arm-64-linux.cmake
 
           - arch: x86
             bits: 32
@@ -114,13 +116,31 @@ jobs:
           git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0004-fix-dr-1734.patch
           git -C llvm-project apply ../llvm-nightlies/patches/llvm/10/0006-workaround-msvc-bug.patch
 
+      # Will need to run two different developer command prompts.
+      - name: Configure LLVM host tools
+        if: runner.arch == 'arm'
+        run: "cmake -G Ninja -S llvm-project/llvm -B llvm-host
+                    -DCMAKE_BUILD_TYPE=Release
+                    -DLLVM_ENABLE_PROJECTS=clang
+                    -DLLVM_ENABLE_TERMINFO=OFF
+                    -DLLVM_ENABLE_LIBXML2=OFF"
+
+      - name: Build LLVM host tools
+        if: runner.arch == 'arm'
+        run: |
+          cmake --build llvm-host --target llvm-tblgen clang-tblgen
+          echo "LLVM_TABLEGEN=$PWD/llvm-host/bin/llvm-tblgen" >> $GITHUB_ENV
+          echo "CLANG_TABLEGEN=$PWD/llvm-host/bin/clang-tblgen" >> $GITHUB_ENV
+
       - name: Configure LLVM
         run: "cmake -G Ninja
                     -DCMAKE_BUILD_TYPE=Release
-                    \"-DCMAKE_TOOLCHAIN_FILE=${{matrix.CMAKE_TOOLCHAIN_FILE}}\"
+                    \"-DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/${{matrix.CMAKE_TOOLCHAIN_FILE}}\"
                     \"-DLLVM_BUILD_32_BITS=${{matrix.LLVM_BUILD_32_BITS}}\"
                     \"-DLLVM_TARGETS_TO_BUILD=X86;ARM;NVPTX;AArch64;Mips;Hexagon;PowerPC;WebAssembly\"
                     \"-DLLVM_ENABLE_PROJECTS=clang;lld\"
+                    -DCLANG_TABLEGEN=$CLANG_TABLEGEN
+                    -DLLVM_TABLEGEN=$LLVM_TABLEGEN
                     -DLLVM_ENABLE_ASSERTIONS=ON
                     -DLLVM_ENABLE_RTTI=ON
                     -DLLVM_ENABLE_EH=ON
@@ -132,7 +152,7 @@ jobs:
         run: cmake --build llvm-build
 
       - name: Install LLVM
-        run: cmake --install llvm-build --prefix llvm-install
+        run: cmake --install llvm-build --prefix llvm-install --strip
 
       - name: Upload LLVM package
         uses: actions/upload-artifact@v2
