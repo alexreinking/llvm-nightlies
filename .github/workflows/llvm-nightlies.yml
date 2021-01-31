@@ -32,7 +32,9 @@ jobs:
           - version: 11
             branch: release/11.x
           - version: 12
-            branch: master
+            branch: release/12.x
+          - version: 13
+            branch: main
 
           - os: windows
             runner: windows-2019
