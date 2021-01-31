@@ -2,7 +2,7 @@
 
 This is a stub repo to make nightly LLVM packages via GitHub Actions.
 
-For each of LLVM 10 (previous), 11 (current), and 12 (trunk), it builds binaries for the following architectures:
+For each of LLVM 10, 11, 12, and `main` branch, it builds binaries for the following architectures:
 
 Arch                  | Windows            | macOS                    | Linux
 ----------------------|--------------------|--------------------------|--------------------
