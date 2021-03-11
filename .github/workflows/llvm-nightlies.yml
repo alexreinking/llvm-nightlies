@@ -79,7 +79,7 @@ jobs:
           - arch: x86
             bits: 64
             os: windows
-            msvc: amd64_amd64
+            msvc: amd64
     steps:
       - name: Configure Windows runner
         if: runner.os == 'Windows'
